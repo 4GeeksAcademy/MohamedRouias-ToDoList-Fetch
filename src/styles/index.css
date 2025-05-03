@@ -74,3 +74,9 @@ input::placeholder{
 li:hover .btn-close {
     display: block;
 }
+
+.task-counter {
+    margin: 0%;
+    float: inline-start;
+    font-size: 14px;
+}

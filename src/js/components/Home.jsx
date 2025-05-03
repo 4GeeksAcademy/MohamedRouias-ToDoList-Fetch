@@ -58,7 +58,7 @@ const Home = () => {
 					{tasks.length} {tasks.length === 1 ? "item" : "items"} left
 				</div>
 			</div>
-
+			
 		</>
 	);
 };

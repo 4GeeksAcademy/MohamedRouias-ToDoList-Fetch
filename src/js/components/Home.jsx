@@ -1,12 +1,47 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+
 
 
 //create your first component
 
 
 const Home = () => {
+
+	useEffect(() => {
+		getTasks();
+	}, []
+	)
+
 	const [newTask, setNewTask] = useState(""); //string for the new task 
 	const [tasks, setTasks] = useState([""]); // setting an array for the list
+	////////////////////////////////////////////////
+	function getTasks() {
+		fetch("https://playground.4geeks.com/todo/users/MohamedRouias",)//Aqui pondremos la URI, el metodo y si es necesario el body
+			.then((response) => {
+				console.log(response);
+				if (!response.ok) {
+					throw new Error(`Error ${response.status}: ${response.statusText}`)
+				}
+				return response.json()//response.json() convierte JSON a JS 
+			})// codigo de status y la información en formato JSON, ENVIO DE ERRORES A CATCH
+			.then((data) => {
+				console.log(data);
+				setTasks(data.todos)
+			})// informacion en formato JS
+			.catch((error) => {
+				console.error(error.message)
+			})// manejo de errores
+
+		/////////////////////////////////////////
+
+
+
+	}
+
+
+
+
+
 
 	function handleInputChange(event) {
 		setNewTask(event.target.value);
@@ -36,14 +71,15 @@ const Home = () => {
 				<input className="form-control"
 					type="text"
 					placeholder="Add new task"
-					onChange={handleInputChange} //IT SHOWS the input text that the user is typing
+					onChange={handleInputChange}
 					value={newTask}
 					onKeyDown={handleKeyDown}
+
 				/>
 				<ul>
-					{tasks.map((task, index) =>
+					{tasks.map((todos, index) =>
 						<li key={index}>
-							<span className="text">{task}</span>
+							<span className="text">{todos.label}</span>
 							<button
 								type="button"
 								class="btn-close"
@@ -58,7 +94,7 @@ const Home = () => {
 					{tasks.length} {tasks.length === 1 ? "item" : "items"} left
 				</div>
 			</div>
-			
+
 		</>
 	);
 };

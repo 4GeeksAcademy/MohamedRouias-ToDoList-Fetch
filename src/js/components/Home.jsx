@@ -8,7 +8,7 @@ import React, { useState, useEffect } from "react";
 const Home = () => {
 
 	useEffect(() => {
-		fetchTasks();
+		getTasks();
 	}, []
 	)
 
@@ -17,7 +17,7 @@ const Home = () => {
 
 	////////////////////////////////////////////////
 	//  GET tareas del backend
-	const fetchTasks = () => {
+	const getTasks = () => {
 		fetch("https://playground.4geeks.com/todo/users/MohamedRouias")
 			.then((res) => {
 				if (!res.ok) throw new Error("Error al obtener tareas");
@@ -51,7 +51,7 @@ const Home = () => {
 			})
 			.then(() => {
 				setNewTask("");
-				fetchTasks();
+				getTasks();
 			})
 			.catch((err) => console.error("Error:", err));
 	};
@@ -66,7 +66,7 @@ const Home = () => {
 			.then(res => {
 				if (!res.ok) throw new Error("Error al eliminar tarea");
 				// No intentes hacer res.json()
-				fetchTasks(); // Actualizar lista después de eliminar
+				getTasks(); // Actualizar lista después de eliminar
 			})
 			.catch(err => console.error("DELETE error:", err));
 	};
@@ -83,17 +83,7 @@ const Home = () => {
 			setNewTask(""); // limpia el input
 		}
 	}
-	//if (event.keyCode === 13 || event.key === "Enter") {
-
-	//console.log("Enviando formulario...");
-
-	//setTasks([...tasks, { label: newTask, is_done: false }])
-	//setTasks(t => [...t, {label:newTask, is_done: false}]);
-	//postTasks(newTask);
-	//setNewTask(""); //Limpia el input
-	//}
-	//};
-
+	
 
 
 

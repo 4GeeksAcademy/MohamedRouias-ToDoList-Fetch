@@ -8,38 +8,68 @@ import React, { useState, useEffect } from "react";
 const Home = () => {
 
 	useEffect(() => {
-		getTasks();
+		fetchTasks();
 	}, []
 	)
 
 	const [newTask, setNewTask] = useState(""); //string for the new task 
-	const [tasks, setTasks] = useState([""]); // setting an array for the list
+	const [tasks, setTasks] = useState([]); // setting an array for the list
+
 	////////////////////////////////////////////////
-	function getTasks() {
-		fetch("https://playground.4geeks.com/todo/users/MohamedRouias",)//Aqui pondremos la URI, el metodo y si es necesario el body
-			.then((response) => {
-				console.log(response);
-				if (!response.ok) {
-					throw new Error(`Error ${response.status}: ${response.statusText}`)
-				}
-				return response.json()//response.json() convierte JSON a JS 
-			})// codigo de status y la información en formato JSON, ENVIO DE ERRORES A CATCH
+	//  GET tareas del backend
+	const fetchTasks = () => {
+		fetch("https://playground.4geeks.com/todo/users/MohamedRouias")
+			.then((res) => {
+				if (!res.ok) throw new Error("Error al obtener tareas");
+				return res.json();
+			})
 			.then((data) => {
-				console.log(data);
-				setTasks(data.todos)
-			})// informacion en formato JS
-			.catch((error) => {
-				console.error(error.message)
-			})// manejo de errores
-
-		/////////////////////////////////////////
+				setTasks(data.todos); // asumiendo que el array está en data.todos
+			})
+			.catch((err) => console.error("Fetch error:", err));
+	};
 
 
+	//  POST nueva tarea
+	const addTask = () => {
 
-	}
+		const taskData = {
+			label: newTask,
+			is_done: false,
+		};
+
+		fetch("https://playground.4geeks.com/todo/todos/MohamedRouias", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify(taskData)
+		})
+			.then((res) => {
+				if (!res.ok) throw new Error("Error al agregar tarea");
+				return res.json();
+			})
+			.then(() => {
+				setNewTask("");
+				fetchTasks();
+			})
+			.catch((err) => console.error("Error:", err));
+	};
 
 
 
+	// DELETE una tarea
+	const deleteTask = (id) => {
+		fetch(`https://playground.4geeks.com/todo/todos/${id}`, {
+			method: "DELETE"
+		})
+			.then(res => {
+				if (!res.ok) throw new Error("Error al eliminar tarea");
+				// No intentes hacer res.json()
+				fetchTasks(); // Actualizar lista después de eliminar
+			})
+			.catch(err => console.error("DELETE error:", err));
+	};
 
 
 
@@ -48,19 +78,24 @@ const Home = () => {
 	}
 
 	const handleKeyDown = (event) => {
-		if (event.keyCode === 13 || event.key === "Enter") {
-			// Ejecutar la acción deseada aquí
-			console.log("Enviando formulario...");
-			setTasks(t => [...t, newTask]);
-			setNewTask("");
+		if ((event.key === "Enter" || event.keyCode === 13) && newTask.trim() !== "") {
+			addTask(); // lo sube al servidor
+			setNewTask(""); // limpia el input
 		}
-	};
-
-
-	function deleteTask(index) {
-		const updatedTasks = tasks.filter((_, i) => i !== index);
-		setTasks(updatedTasks);
 	}
+	//if (event.keyCode === 13 || event.key === "Enter") {
+
+	//console.log("Enviando formulario...");
+
+	//setTasks([...tasks, { label: newTask, is_done: false }])
+	//setTasks(t => [...t, {label:newTask, is_done: false}]);
+	//postTasks(newTask);
+	//setNewTask(""); //Limpia el input
+	//}
+	//};
+
+
+
 
 
 
@@ -77,15 +112,15 @@ const Home = () => {
 
 				/>
 				<ul>
-					{tasks.map((todos, index) =>
-						<li key={index}>
-							<span className="text">{todos.label}</span>
+					{tasks.map((task, index) =>
+						<li key={task.id || index}>
+							<span className="text">{task.label}</span>
 							<button
 								type="button"
-								class="btn-close"
+								className="btn-close"
 								data-bs-dismiss="modal"
 								aria-label="Close"
-								onClick={() => deleteTask(index)}>
+								onClick={() => deleteTask(task.id)}>
 							</button>
 						</li>
 					)}
@@ -96,7 +131,7 @@ const Home = () => {
 			</div>
 
 		</>
-	);
+	)
 };
 
 export default Home;

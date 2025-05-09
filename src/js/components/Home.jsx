@@ -24,7 +24,7 @@ const Home = () => {
 				return res.json();
 			})
 			.then((data) => {
-				setTasks(data.todos); // asumiendo que el array está en data.todos
+				setTasks(data.todos); 
 			})
 			.catch((err) => console.error("Fetch error:", err));
 	};
@@ -65,7 +65,6 @@ const Home = () => {
 		})
 			.then(res => {
 				if (!res.ok) throw new Error("Error al eliminar tarea");
-				// No intentes hacer res.json()
 				getTasks(); // Actualizar lista después de eliminar
 			})
 			.catch(err => console.error("DELETE error:", err));

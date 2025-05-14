@@ -8,6 +8,7 @@ import React, { useState, useEffect } from "react";
 const Home = () => {
 
 	useEffect(() => {
+		createUser(); // Creamos el usuario si no existe ninguno
 		getTasks();
 	}, []
 	)
@@ -16,6 +17,22 @@ const Home = () => {
 	const [tasks, setTasks] = useState([]); // setting an array for the list
 
 	////////////////////////////////////////////////
+	function createUser() {
+		fetch("https://playground.4geeks.com/todo/users/MohamedRouias", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify([]) 
+		})
+			.then(res => {
+				if (!res.ok) throw new Error("No se pudo crear el usuario");
+				return res.json();
+			})
+			.then(data => console.log("Usuario creado:", data))
+			.catch(err => console.error("Error creando el usuario:", err));
+	}
+
 	//  GET tareas del backend
 	const getTasks = () => {
 		fetch("https://playground.4geeks.com/todo/users/MohamedRouias")
@@ -24,26 +41,24 @@ const Home = () => {
 				return res.json();
 			})
 			.then((data) => {
-				setTasks(data.todos); 
+				setTasks(data.todos || []);
 			})
 			.catch((err) => console.error("Fetch error:", err));
 	};
 
 
 	//  POST nueva tarea
-	const addTask = () => {
-
-		const taskData = {
-			label: newTask,
-			is_done: false,
-		};
+	const addTask = (tarea) => {
 
 		fetch("https://playground.4geeks.com/todo/todos/MohamedRouias", {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json"
 			},
-			body: JSON.stringify(taskData)
+			body: JSON.stringify({
+				label: tarea,
+				is_done: false
+			})
 		})
 			.then((res) => {
 				if (!res.ok) throw new Error("Error al agregar tarea");
@@ -78,11 +93,11 @@ const Home = () => {
 
 	const handleKeyDown = (event) => {
 		if ((event.key === "Enter" || event.keyCode === 13) && newTask.trim() !== "") {
-			addTask(); // lo sube al servidor
+			addTask(newTask.trim()); // lo sube al servidor
 			setNewTask(""); // limpia el input
 		}
 	}
-	
+
 
 
 
